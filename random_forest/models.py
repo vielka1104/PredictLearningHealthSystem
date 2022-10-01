@@ -2,7 +2,7 @@ class Model:
     def __init__(self, age, blood_pressure, specific_gravity, albumin, sugar, red_blood_cells, pus_cell,
                  pus_cell_clumps, bacteria, blood_glucose_random, blood_urea, serum_creatinine, sodium, potassium,
                  hemoglobin, packed_cell_volume, white_blood_cell_count, red_blood_cell_count, hypertension,
-                 diabetes_mellitus, coronary_artery_disease, appetite, pedal_edema, anemia, classes):
+                 diabetes_mellitus, coronary_artery_disease, appetite, pedal_edema, anemia):
         self.age = age
         self.blood_pressure = blood_pressure
         self.specific_gravity = specific_gravity
@@ -27,4 +27,3 @@ class Model:
         self.appetite = appetite
         self.pedal_edema = pedal_edema
         self.anemia = anemia
-        self.classes = classes

@@ -3,12 +3,11 @@ import pandas as pd
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.impute import SimpleImputer
 from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import StandardScaler
 
 from .models import Model
 
-scaler = StandardScaler()
 regressor = RandomForestClassifier(n_estimators=20, random_state=0)
+imp = SimpleImputer(missing_values=np.nan, strategy='mean')
 
 
 def get_model(data):
@@ -36,31 +35,31 @@ def get_model(data):
     appetite = data.get('appetite', None)
     pedal_edema = data.get('pedal_edema', None)
     anemia = data.get('anemia', None)
-    classes = data.get('classes', None)
     model = Model(age, blood_pressure, specific_gravity, albumin, sugar, red_blood_cells, pus_cell,
                   pus_cell_clumps, bacteria, blood_glucose_random, blood_urea, serum_creatinine, sodium, potassium,
                   hemoglobin, packed_cell_volume, white_blood_cell_count, red_blood_cell_count, hypertension,
-                  diabetes_mellitus, coronary_artery_disease, appetite, pedal_edema, anemia, classes)
+                  diabetes_mellitus, coronary_artery_disease, appetite, pedal_edema, anemia)
     return model
 
 
 def classifier():
     url = 'https://raw.githubusercontent.com/MarioTataje/lhs-dataset/main/ckd.csv'
     dataset = pd.read_csv(url)
-    features = dataset.iloc[:, 0:8].values
-    labels = dataset.iloc[:, 8].values
-    train_features, test_attributes, train_labels, test_labels = train_test_split(features, labels, test_size=0.9,
-                                                                                  random_state=0)
-    imp = SimpleImputer(missing_values=np.nan, strategy='mean')
-    train_features = scaler.fit_transform(train_features)
+    features = dataset.iloc[:, 0:24].values
+    labels = dataset.iloc[:, 24].values
+    train_features, test_features, train_labels, test_labels = train_test_split(features, labels, test_size=0.9,
+                                                                                random_state=0)
+    global imp
+    imp = imp.fit(train_features)
+    train_features = imp.transform(train_features)
     regressor.fit(train_features, train_labels)
 
 
 def predict(model):
-    test_attributes = get_test(model)
-    test_attributes = scaler.transform(test_attributes)
-    prediction = regressor.predict(test_attributes)[0]
-    possibilities = regressor.predict_proba(test_attributes)[0]
+    test_labels = get_test(model)
+    test_labels = imp.transform(test_labels)
+    prediction = regressor.predict(test_labels)[0]
+    possibilities = regressor.predict_proba(test_labels)[0]
     return get_response(prediction, possibilities[1], possibilities[0])
 
 
@@ -69,8 +68,7 @@ def get_test(model):
              model.red_blood_cells, model.pus_cell, model.pus_cell_clumps, model.bacteria, model.blood_glucose_random,
              model.blood_urea, model.serum_creatinine, model.sodium, model.potassium, model.hemoglobin,
              model.packed_cell_volume, model.white_blood_cell_count, model.red_blood_cell_count, model.hypertension,
-             model.diabetes_mellitus, model.coronary_artery_disease, model.appetite, model.pedal_edema, model.anemia,
-             model.classes]]
+             model.diabetes_mellitus, model.coronary_artery_disease, model.appetite, model.pedal_edema, model.anemia]]
     return test
 
 
