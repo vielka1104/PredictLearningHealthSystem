@@ -1,0 +1,1 @@
+web: gunicorn learning_health_system:app
