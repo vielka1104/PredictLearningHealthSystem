@@ -3,7 +3,6 @@ import pandas as pd
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.impute import SimpleImputer
 from sklearn.model_selection import train_test_split
-
 from .models import Model
 
 regressor = RandomForestClassifier(n_estimators=20, random_state=0)
@@ -47,7 +46,7 @@ def classifier():
     dataset = pd.read_csv(url)
     features = dataset.iloc[:, 0:24].values
     labels = dataset.iloc[:, 24].values
-    train_features, test_features, train_labels, test_labels = train_test_split(features, labels, test_size=0.9,
+    train_features, test_features, train_labels, test_labels = train_test_split(features, labels, test_size=0.1,
                                                                                 random_state=0)
     global imp
     imp = imp.fit(train_features)
@@ -56,10 +55,10 @@ def classifier():
 
 
 def predict(model):
-    test_labels = get_test(model)
-    test_labels = imp.transform(test_labels)
-    prediction = regressor.predict(test_labels)[0]
-    possibilities = regressor.predict_proba(test_labels)[0]
+    test_feature = get_test(model)
+    test_feature = imp.transform(test_feature)
+    prediction = regressor.predict(test_feature)[0]
+    possibilities = regressor.predict_proba(test_feature)[0]
     return get_response(prediction, possibilities[1], possibilities[0])
 
 
